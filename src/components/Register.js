@@ -17,7 +17,7 @@ const Register = (props) => {
     }, [email, password, onSubmit])
     
     return(
-        <form className="authorization__form" onSubmit={handleSubmit}>
+        <form className="authorization__form" onSubmit={handleSubmit} >
             <h2 className="authorization__title">Регистрация</h2>
             <input 
             className="authorization__input" 
@@ -27,6 +27,7 @@ const Register = (props) => {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            autoComplete="off"
             >
             </input>
             <input 
@@ -37,6 +38,7 @@ const Register = (props) => {
             placeholder="Пароль"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            autoComplete="off"
             >
             </input>
             <button 

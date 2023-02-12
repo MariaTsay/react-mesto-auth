@@ -16,7 +16,6 @@ import ProtectedRoute from "./ProtectedRoute";
 import { checkAuth, signIn, signUp } from "../utils/auth";
 import InfoTooltip from "./InfoTooltip";
 
-
 function App() {
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
@@ -31,6 +30,7 @@ function App() {
   const [userEmail, setUserEmail] = useState('');
   const navigate = useNavigate();
 
+  //управление формой регистрации
   const handleSignUp = async (data) => {
     try {
       await signUp(data);
@@ -44,15 +44,16 @@ function App() {
     }
   }
 
+  //управление формой авторизации
   const handleSignIn = async (data) => {
     const {token} = await signIn(data);
     localStorage.setItem('jwt', token);
     setIsLoggedIn(true);
     setUserEmail(data.email);
     navigate("/");
-   
   }
 
+  //проверка токена
   useEffect(() => {
     const jwt = localStorage.getItem('jwt');
 
@@ -65,6 +66,7 @@ function App() {
     }
   }, [navigate])
 
+  //выход пользователя со страницы
   const handleSignOut = () => {
     localStorage.removeItem('jwt');
     setIsLoggedIn(false);
@@ -89,6 +91,7 @@ function App() {
     setSelectedCard(card)
   }
 
+  //лайки-дизлайки
   const handleCardLike = async (card) => {
     // Снова проверяем, есть ли уже лайк на этой карточке
     const isLiked = card.likes.some(i => i._id === currentUser._id);
@@ -108,6 +111,7 @@ function App() {
 
   }
 
+  //удаление карточки
   const handleCardDelete = async (card) => {
     try {
       await api.deleteCard(card._id);
@@ -117,6 +121,7 @@ function App() {
     }
   }
 
+  //редактирование информации о пользователе
   const handleUpdateUser = async ({ name, about }) => {
     try {
       const updatedUser = await api.setUserInfo({ name, about });
@@ -127,6 +132,7 @@ function App() {
     }
   }
 
+  //редактирование аватара
   const handleUpdateAvatar = async (data) => {
     try {
       const updatedAvatar = await api.editAvatar(data);
@@ -137,6 +143,7 @@ function App() {
     }
   }
 
+  //загузка карточек
   const handleAddPlaceSubmit = async (data) => {
     try {
       const newCard = await api.createCard(data);
@@ -147,6 +154,7 @@ function App() {
     }
   }
 
+  //закрытие всех попапов
   const closeAllPopups = () => {
     setIsEditAvatarPopupOpen(false);
     setIsEditProfilePopupOpen(false);
