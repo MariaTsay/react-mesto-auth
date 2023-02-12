@@ -1,8 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 const PopupWithForm = (props) => {
 
   const { name, title, children, submitBtnText, isOpen, onClose, onSubmit } = props;
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleEscBtn = (e) => {
+      if (e.keyCode === 27)
+        onClose()
+    }
+    document.addEventListener('keydown', handleEscBtn)
+    return () => document.removeEventListener('keydown', handleEscBtn)
+  }, [isOpen, onClose])
+
   return (
 
     <section className={`popup popup_type_${name} ${isOpen ? 'popup_opened' : ''}`} >

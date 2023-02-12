@@ -38,7 +38,7 @@ function App() {
       setisInfoTooltipStatus('success');
       navigate("/sign-in");
     } catch (err) {
-      console.log(err)
+      console.log(err);
       setisInfoTooltipOpened(true);
       setisInfoTooltipStatus('fail');
     }
@@ -46,23 +46,31 @@ function App() {
 
   //управление формой авторизации
   const handleSignIn = async (data) => {
-    const {token} = await signIn(data);
-    localStorage.setItem('jwt', token);
-    setIsLoggedIn(true);
-    setUserEmail(data.email);
-    navigate("/");
+    try {
+      const { token } = await signIn(data);
+      localStorage.setItem('jwt', token);
+      setIsLoggedIn(true);
+      setUserEmail(data.email);
+      navigate("/");
+    } catch (err) {
+      console.log(err);
+      setisInfoTooltipOpened(true);
+      setisInfoTooltipStatus('fail');
+    }
   }
 
   //проверка токена
   useEffect(() => {
     const jwt = localStorage.getItem('jwt');
 
-    if(jwt) {
-      checkAuth(jwt).then((data) => {
-        setIsLoggedIn(true);
-        setUserEmail(data.data.email);
-        navigate("/");
-      });
+    if (jwt) {
+      checkAuth(jwt)
+        .then((data) => {
+          setIsLoggedIn(true);
+          setUserEmail(data.data.email);
+          navigate("/");
+        })
+        .catch((err) => console.log(err));
     }
   }, [navigate])
 
@@ -187,38 +195,29 @@ function App() {
     getCards();
   }, [])
 
-  useEffect(() => {
-    const handleEscBtn = (e) => {
-      if (e.keyCode === 27)
-        closeAllPopups()
-    }
-    document.addEventListener('keydown', handleEscBtn)
-    return () => document.removeEventListener('keydown', handleEscBtn)
-  }, [])
-
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="body">
         <div className="page">
           <Header userEmail={userEmail} onSignOut={handleSignOut} />
           <Routes>
-          <Route path="/" element={
-               <ProtectedRoute isLoggedIn={isLoggedIn}>
-                <Main 
-                 onEditAvatar={handleEditAvatarClick}
-                 onEditProfile={handleEditProfileClick}
-                 onAddPlace={handleAddPlaceClick}
-                 onCardClick={handleCardClick}
-                 onCardLike={handleCardLike}
-                 onCardDelete={handleCardDelete}
-                 cards={cards}
+            <Route path="/" element={
+              <ProtectedRoute isLoggedIn={isLoggedIn}>
+                <Main
+                  onEditAvatar={handleEditAvatarClick}
+                  onEditProfile={handleEditProfileClick}
+                  onAddPlace={handleAddPlaceClick}
+                  onCardClick={handleCardClick}
+                  onCardLike={handleCardLike}
+                  onCardDelete={handleCardDelete}
+                  cards={cards}
                 />
-               </ProtectedRoute>
-            }/>
+              </ProtectedRoute>
+            } />
             <Route path="/sign-up" element={<Register onSubmit={handleSignUp} />} />
-            <Route path="/sign-in" element={<Login onSubmit={handleSignIn}  />} />
+            <Route path="/sign-in" element={<Login onSubmit={handleSignIn} />} />
           </Routes>
-         
+
           <Footer />
         </div>
         <EditProfilePopup
@@ -246,10 +245,11 @@ function App() {
           onClose={closeAllPopups}
           onUpdateAvatar={handleUpdateAvatar}
         />
-        <InfoTooltip 
+        <InfoTooltip
           isOpen={isInfoTooltipOpened}
           onClose={closeAllPopups}
           status={isInfoTooltipStatus}
+          text={isInfoTooltipStatus === 'success' ? 'Вы успешно зарегистрировались!' : 'Что-то пошло не так! Попробуйте ещё раз.'}
         />
       </div>
     </CurrentUserContext.Provider>
